@@ -1,0 +1,39 @@
+// Pin Definitions
+const int soilPin = A0;    // Soil moisture sensor connected to A0
+const int tempPin = A1;    // TMP36 temperature sensor connected to A1
+const int controlPin = 7;  // Digital pin D7 connected to control device
+
+// Variables
+int soilValue;             // Variable to store soil sensor value
+float temperatureC;        // Variable for temperature in Celsius
+
+void setup() {
+  Serial.begin(9600);      // Start serial communication
+  pinMode(controlPin, OUTPUT); // Set control pin as output
+}
+
+void loop() {
+  // --- Soil Moisture Sensor Reading ---
+  soilValue = analogRead(soilPin); // Read soil sensor value
+  Serial.print("Soil Moisture: ");
+  Serial.println(soilValue);
+
+  // --- Temperature Sensor Reading ---
+  int analogValue = analogRead(tempPin);          // Read TMP36 value
+  float voltage = analogValue * (5.0 / 1023.0);   // Convert analog value to voltage
+  temperatureC = (voltage - 0.5) * 100.0;         // Convert voltage to temperature in Celsius
+
+  Serial.print("Temperature: ");
+  Serial.print(temperatureC);
+  Serial.println(" °C");
+
+  // --- Control Pin D7 HIGH and then LOW ---
+  digitalWrite(controlPin, HIGH); // Set D7 HIGH
+  delay(500);                     // Wait for 500 milliseconds
+  digitalWrite(controlPin, LOW);  // Set D7 LOW
+  delay(500);                     // Wait for another 500 milliseconds
+
+  // --- Delay Before Next Loop ---
+  delay(1000); // Wait 1 second before next readings
+}
+

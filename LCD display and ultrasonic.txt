@@ -1,0 +1,54 @@
+#include <LiquidCrystal.h>
+
+// LCD pin configuration
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+// Ultrasonic sensor pin configuration
+const int trigPin = 9;
+const int echoPin = 8;
+
+long duration;
+int distance;
+
+void setup() {
+  // Initialize LCD
+  lcd.begin(16, 2);  // Set the LCD to 16 columns and 2 rows
+  lcd.print("Distance:");
+
+  // Initialize Ultrasonic sensor pins
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  // Start serial monitor for debugging
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Send trigger pulse to the ultrasonic sensor
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  // Measure echo pulse
+  duration = pulseIn(echoPin, HIGH);
+
+  // Calculate distance in cm (using speed of sound)
+  distance = duration * 0.034 / 2;
+
+  // Display distance on the LCD
+  lcd.setCursor(0, 1);  // Move to the second row of the LCD
+  lcd.print("Dist: ");
+  lcd.print(distance);
+  lcd.print(" cm   ");  // Extra spaces to clear any leftover characters
+
+  // Print the distance to the Serial Monitor (optional)
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  delay(500);  // Wait for half a second before the next reading
+}
+

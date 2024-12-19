@@ -1,0 +1,71 @@
+#define TRIG_PIN 4
+#define ECHO_PIN 2
+
+// RGB LED Pins
+#define RED_PIN 13
+#define GREEN_PIN 9
+#define BLUE_PIN 11
+
+// Distance thresholds (in cm)
+#define NEAR_THRESHOLD 10  // Object is near
+#define FAR_THRESHOLD 30   // Object is far
+
+void setup() {
+  // Initialize ultrasonic sensor
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  // Initialize RGB LED pins
+  pinMode(RED_PIN, OUTPUT);
+  pinMode(GREEN_PIN, OUTPUT);
+  pinMode(BLUE_PIN, OUTPUT);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Get distance
+  float distance = getDistance();
+
+  // Print distance to Serial Monitor
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  // Control RGB LED based on distance
+  if (distance <= NEAR_THRESHOLD) {
+    // Near: Turn on Green
+    setColor(0, 255, 0); 
+  } else if (distance > NEAR_THRESHOLD && distance <= FAR_THRESHOLD) {
+    // Middle: Turn on Blue
+    setColor(0, 0, 255); 
+  } else {
+    // Far: Turn on Red
+    setColor(255, 0, 0); 
+  }
+
+  delay(100); // Small delay for stability
+}
+
+float getDistance() {
+  // Send a 10-microsecond pulse to trigger pin
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  // Measure the pulse duration on echo pin
+  long duration = pulseIn(ECHO_PIN, HIGH);
+
+  // Convert duration to distance in cm (speed of sound is 343 m/s)
+  float distance = (duration * 0.034) / 2;
+
+  return distance;
+}
+
+void setColor(int red, int green, int blue) {
+  analogWrite(RED_PIN, red);
+  analogWrite(GREEN_PIN, green);
+  analogWrite(BLUE_PIN, blue);
+}
